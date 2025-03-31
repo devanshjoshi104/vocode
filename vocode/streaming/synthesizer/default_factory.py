@@ -8,6 +8,7 @@ from vocode.streaming.models.synthesizer import (
     RimeSynthesizerConfig,
     StreamElementsSynthesizerConfig,
     SynthesizerConfig,
+    WaveSynthesizerConfig
 )
 from vocode.streaming.synthesizer.abstract_factory import AbstractSynthesizerFactory
 from vocode.streaming.synthesizer.azure_synthesizer import AzureSynthesizer
@@ -19,6 +20,7 @@ from vocode.streaming.synthesizer.play_ht_synthesizer import PlayHtSynthesizer
 from vocode.streaming.synthesizer.play_ht_synthesizer_v2 import PlayHtSynthesizerV2
 from vocode.streaming.synthesizer.rime_synthesizer import RimeSynthesizer
 from vocode.streaming.synthesizer.stream_elements_synthesizer import StreamElementsSynthesizer
+from vocode.streaming.synthesizer.waves_synthesizer import WaveSynthesizer
 
 
 class DefaultSynthesizerFactory(AbstractSynthesizerFactory):
@@ -30,6 +32,8 @@ class DefaultSynthesizerFactory(AbstractSynthesizerFactory):
             return AzureSynthesizer(synthesizer_config)
         elif isinstance(synthesizer_config, CartesiaSynthesizerConfig):
             return CartesiaSynthesizer(synthesizer_config)
+        elif isinstance(synthesizer_config, WaveSynthesizerConfig):
+            return WaveSynthesizer(synthesizer_config)
         elif isinstance(synthesizer_config, ElevenLabsSynthesizerConfig):
             eleven_labs_synthesizer_class_type: Type[BaseSynthesizer] = ElevenLabsSynthesizer
             if synthesizer_config.experimental_websocket:

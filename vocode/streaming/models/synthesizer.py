@@ -25,6 +25,8 @@ class SynthesizerType(str, Enum):
     BARK = "synthesizer_bark"
     POLLY = "synthesizer_polly"
     CARTESIA = "synthesizer_cartesia"
+    WAVES = "synthesizer_waves"
+
 
 
 class SentimentConfig(BaseModel):
@@ -245,3 +247,8 @@ class CartesiaSynthesizerConfig(SynthesizerConfig, type=SynthesizerType.CARTESIA
     model_id: str = DEFAULT_CARTESIA_MODEL_ID
     voice_id: str = DEFAULT_CARTESIA_VOICE_ID
     experimental_voice_controls: Optional[CartesiaVoiceControls] = None
+
+class WaveSynthesizerConfig(SynthesizerConfig, type=SynthesizerType.WAVES.value):
+    api_key: Optional[str] = None
+    voice_id: str = 'ananya'
+    speed: float = 1.0
