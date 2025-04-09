@@ -18,7 +18,7 @@ from vocode.streaming.action.default_factory import DefaultActionFactory
 from vocode.streaming.action.execute_external_action import ExecuteExternalActionVocodeActionConfig
 from vocode.streaming.action.phone_call_action import (
     TwilioPhoneConversationAction,
-    VonagePhoneConversationAction,
+    VonagePhoneConversationAction, ExotelPhoneConversationAction,
 )
 from vocode.streaming.agent.goodbye import is_goodbye_simple
 from vocode.streaming.agent.phrase_trigger import matches_phrase_trigger
@@ -72,6 +72,8 @@ class AgentInput(TypedModel, type=AgentInputType.BASE.value):  # type: ignore
     conversation_id: str
     vonage_uuid: Optional[str]
     twilio_sid: Optional[str]
+    exotel_sid: Optional[str]
+    to_phone: Optional[str]
     agent_response_tracker: Optional[asyncio.Event] = None
 
     class Config:
@@ -530,6 +532,16 @@ class RespondAgent(BaseAgent[AgentConfigType]):
                 agent_input.conversation_id,
                 params,
                 agent_input.twilio_sid,
+                user_message_tracker,
+            )
+        elif isinstance(action, ExotelPhoneConversationAction):
+            assert (
+                agent_input.to_phone is not None
+            ), "phone number not attached in ExotelPhoneConversationActionInput"
+            action_input = action.create_phone_conversation_action_input(
+                agent_input.conversation_id,
+                params,
+                agent_input.to_phone,
                 user_message_tracker,
             )
         else:

@@ -117,6 +117,10 @@ class TwilioPhoneConversationActionInput(ActionInput[ParametersType]):
     twilio_sid: str
 
 
+class ExotelPhoneConversationActionInput(ActionInput[ParametersType]):
+    to_phone: str
+
+
 ResponseType = TypeVar("ResponseType", bound=BaseModel)
 
 

@@ -16,6 +16,7 @@ from vocode.streaming.telephony.constants import (
     VONAGE_AUDIO_ENCODING,
     VONAGE_CHUNK_SIZE,
     VONAGE_SAMPLING_RATE,
+    EXOTEL_AUDIO_ENCODING
 )
 
 
@@ -37,6 +38,14 @@ class VonageConfig(TelephonyProviderConfig):
     private_key: str
 
 
+class ExotelConfig(TelephonyProviderConfig):
+    api_key: str
+    api_token: str
+    account_sid: str
+    sub_domain: str
+    caller_id: str = None
+
+
 class CallEntity(BaseModel):
     phone_number: str
 
@@ -52,12 +61,14 @@ class CreateInboundCall(BaseModel):
     conversation_id: Optional[str] = None
     twilio_config: Optional[TwilioConfig] = None
     vonage_config: Optional[VonageConfig] = None
+    exotel_config: Optional[ExotelConfig] = None
 
 
 class EndOutboundCall(BaseModel):
     call_id: str
     vonage_config: Optional[VonageConfig] = None
     twilio_config: Optional[TwilioConfig] = None
+    exotel_config: Optional[ExotelConfig] = None
 
 
 class CreateOutboundCall(BaseModel):
@@ -69,6 +80,7 @@ class CreateOutboundCall(BaseModel):
     conversation_id: Optional[str] = None
     vonage_config: Optional[VonageConfig] = None
     twilio_config: Optional[TwilioConfig] = None
+    exotel_config: Optional[ExotelConfig] = None
     # TODO add IVR/etc.
 
 
@@ -89,6 +101,7 @@ class CallConfigType(str, Enum):
     BASE = "call_config_base"
     TWILIO = "call_config_twilio"
     VONAGE = "call_config_vonage"
+    EXOTEL = "call_config_exotel"
 
 
 PhoneCallDirection = Literal["inbound", "outbound"]
@@ -161,4 +174,27 @@ class VonageCallConfig(BaseCallConfig, type=CallConfigType.VONAGE.value):  # typ
         )
 
 
-TelephonyConfig = Union[TwilioConfig, VonageConfig]
+class ExotelCallConfig(BaseCallConfig, type=CallConfigType.EXOTEL.value):
+    exotel_config: ExotelConfig
+    exotel_sid: str
+
+    @staticmethod
+    def default_transcriber_config():
+        return DeepgramTranscriberConfig(
+            sampling_rate=DEFAULT_SAMPLING_RATE,
+            audio_encoding=EXOTEL_AUDIO_ENCODING,
+            chunk_size=DEFAULT_CHUNK_SIZE,
+            model="nova-2",
+            language="hi",
+            endpointing_config=PunctuationEndpointingConfig(),
+        )
+
+    @staticmethod
+    def default_synthesizer_config():
+        return AzureSynthesizerConfig(
+            sampling_rate=DEFAULT_SAMPLING_RATE,
+            audio_encoding=EXOTEL_AUDIO_ENCODING,
+        )
+
+
+TelephonyConfig = Union[TwilioConfig, VonageConfig, ExotelConfig]

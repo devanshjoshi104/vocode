@@ -7,7 +7,7 @@ from vocode.streaming.models.actions import (
     ParametersType,
     ResponseType,
     TwilioPhoneConversationActionInput,
-    VonagePhoneConversationActionInput,
+    VonagePhoneConversationActionInput, ExotelPhoneConversationActionInput,
 )
 from vocode.streaming.utils.state_manager import (
     TwilioPhoneConversationStateManager,
@@ -67,3 +67,26 @@ class TwilioPhoneConversationAction(BaseAction[ActionConfigType, ParametersType,
     def attach_conversation_state_manager(self, conversation_state_manager: Any):
         assert isinstance(conversation_state_manager, TwilioPhoneConversationStateManager)
         self.conversation_state_manager = conversation_state_manager
+
+
+class ExotelPhoneConversationAction(BaseAction[ActionConfigType, ParametersType, ResponseType]):
+    def create_phone_conversation_action_input(
+        self,
+        conversation_id: str,
+        params: Dict[str, Any],
+        to_phone: str,
+        user_message_tracker: Optional[asyncio.Event] = None,
+    ) -> ExotelPhoneConversationActionInput[ParametersType]:
+        if "user_message" in params:
+            del params["user_message"]
+        return ExotelPhoneConversationActionInput(
+            action_config=self.action_config,
+            conversation_id=conversation_id,
+            params=self.parameters_type(**params),
+            to_phone=to_phone,
+            user_message_tracker=user_message_tracker,
+        )
+
+    def get_to_phone(self, action_input: ActionInput[ParametersType]) -> str:
+        assert isinstance(action_input, ExotelPhoneConversationActionInput)
+        return action_input.to_phone

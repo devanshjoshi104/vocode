@@ -5,7 +5,7 @@ from pydantic.v1 import validator
 
 from vocode.streaming.models.client_backend import OutputAudioConfig
 from vocode.streaming.output_device.abstract_output_device import AbstractOutputDevice
-from vocode.streaming.telephony.constants import DEFAULT_AUDIO_ENCODING, DEFAULT_SAMPLING_RATE
+from vocode.streaming.telephony.constants import DEFAULT_AUDIO_ENCODING, DEFAULT_SAMPLING_RATE, EXOTEL_AUDIO_ENCODING
 
 from .audio import AudioEncoding, SamplingRate
 from .model import BaseModel, TypedModel
@@ -26,7 +26,6 @@ class SynthesizerType(str, Enum):
     POLLY = "synthesizer_polly"
     CARTESIA = "synthesizer_cartesia"
     WAVES = "synthesizer_waves"
-
 
 
 class SentimentConfig(BaseModel):
@@ -61,6 +60,12 @@ class SynthesizerConfig(TypedModel, type=SynthesizerType.BASE.value):  # type: i
     def from_telephone_output_device(cls, **kwargs):
         return cls(
             sampling_rate=DEFAULT_SAMPLING_RATE, audio_encoding=DEFAULT_AUDIO_ENCODING, **kwargs
+        )
+
+    @classmethod
+    def from_exotel_output_device(cls, **kwargs):
+        return cls(
+            sampling_rate=DEFAULT_SAMPLING_RATE, audio_encoding=EXOTEL_AUDIO_ENCODING, **kwargs
         )
 
     @classmethod
@@ -248,7 +253,8 @@ class CartesiaSynthesizerConfig(SynthesizerConfig, type=SynthesizerType.CARTESIA
     voice_id: str = DEFAULT_CARTESIA_VOICE_ID
     experimental_voice_controls: Optional[CartesiaVoiceControls] = None
 
+
 class WaveSynthesizerConfig(SynthesizerConfig, type=SynthesizerType.WAVES.value):
     api_key: Optional[str] = None
     voice_id: str = 'ananya'
-    speed: float = 1.0
+    speed: float = 1.2
