@@ -1,7 +1,7 @@
 import audioop
 import hashlib
 
-from vocode.streaming.models.synthesizer import SynthesizerConfig, WaveSynthesizerConfig
+from vocode.streaming.models.synthesizer import  WaveSynthesizerConfig
 from vocode.streaming.synthesizer.base_synthesizer import BaseSynthesizer, SynthesisResult
 from vocode.streaming.models.message import BaseMessage
 from vocode.streaming.models.audio import AudioEncoding

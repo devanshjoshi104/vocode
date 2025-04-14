@@ -10,13 +10,13 @@ from pydantic import BaseModel
 from pyngrok import ngrok
 
 from vocode.logging import configure_pretty_logging
-from vocode.streaming.models.agent import ChatGPTAgentConfig, OPENAI_GPT_4_O_MODEL_NAME, OPENAI_GPT_4_O_MINI_MODEL_NAME
+from vocode.streaming.models.agent import ChatGPTAgentConfig, OPENAI_GPT_4_O_MINI_MODEL_NAME
 from vocode.streaming.models.message import BaseMessage
 from vocode.streaming.models.synthesizer import WaveSynthesizerConfig
-from vocode.streaming.models.telephony import TwilioConfig, ExotelConfig
+from vocode.streaming.models.telephony import  ExotelConfig
 from vocode.streaming.telephony.config_manager.in_memory_config_manager import InMemoryConfigManager
 from vocode.streaming.telephony.conversation.outbound_call import OutboundCall
-from vocode.streaming.telephony.server.base import TelephonyServer, TwilioInboundCallConfig, ExotelInboundCallConfig
+from vocode.streaming.telephony.server.base import TelephonyServer, ExotelInboundCallConfig
 
 from fastapi import APIRouter
 
@@ -32,6 +32,7 @@ synt_config = WaveSynthesizerConfig.from_exotel_output_device()
 synt_config.api_key = os.getenv("WAVES_API_KEY")
 
 BASE_URL = os.getenv("BASE_URL")
+outbound_router = APIRouter()
 
 if not BASE_URL:
     ngrok_auth = os.environ.get("NGROK_AUTH_TOKEN")
@@ -55,7 +56,7 @@ exotel_config = ExotelConfig(
 )
 
 agent_config = ChatGPTAgentConfig(
-    initial_message=BaseMessage(text="Hey Mayank, What's up, How are you?"),
+    initial_message=BaseMessage(text="Hey What's up, How are you?"),
     prompt_preamble="Have a pleasant conversation about life",
     generate_responses=True,
     model_name=OPENAI_GPT_4_O_MINI_MODEL_NAME)
@@ -74,14 +75,13 @@ telephony_server = TelephonyServer(
     ]
 )
 
-router = APIRouter()
 
 
 class MakeCallRequest(BaseModel):
     to_phone: str
 
 
-@router.post("/make_call")
+@outbound_router.post("/make_call")
 async def make_call(request: MakeCallRequest):
     outbound_call = OutboundCall(
         base_url=BASE_URL,
@@ -97,4 +97,4 @@ async def make_call(request: MakeCallRequest):
 
 
 app.include_router(telephony_server.get_router())
-app.include_router(router)
+app.include_router(outbound_router)

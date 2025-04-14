@@ -18,12 +18,8 @@ class EventsManager(events_manager.EventsManager):
         if event.type == EventType.TRANSCRIPT_COMPLETE:
             transcript_complete_event = typing.cast(TranscriptCompleteEvent, event)
 
-            # Prepare the data to be sent
             data = {
                 "conversation_id": transcript_complete_event.conversation_id,
-                "user_id": 1,  # demo user id
                 "transcript": transcript_complete_event.transcript.to_string()
             }
-
-            print(data)
-            print("here is trasncript")
+            # transcript to be used for post-processing

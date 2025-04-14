@@ -76,7 +76,7 @@ async def make_call():
     outbound_call = OutboundCall(
         base_url=BASE_URL,
         # TODO: move tophone to arguement
-        to_phone="+918824916178",
+        to_phone="+91",
         from_phone="+19253294640",
         config_manager=config_manager,
         agent_config=ChatGPTAgentConfig(

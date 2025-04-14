@@ -1,24 +1,21 @@
 import asyncio
+import os
 import signal
 
+from dotenv import load_dotenv
 from pydantic_settings import BaseSettings, SettingsConfigDict
 
 from vocode.helpers import create_streaming_microphone_input_and_speaker_output
 from vocode.logging import configure_pretty_logging
 from vocode.streaming.agent.chat_gpt_agent import ChatGPTAgent
 from vocode.streaming.models.agent import ChatGPTAgentConfig
-from vocode.streaming.models.audio import SamplingRate
 from vocode.streaming.models.message import BaseMessage
-from vocode.streaming.models.synthesizer import AzureSynthesizerConfig, ElevenLabsSynthesizerConfig, \
-    CartesiaSynthesizerConfig, WaveSynthesizerConfig
+from vocode.streaming.models.synthesizer import WaveSynthesizerConfig
 from vocode.streaming.models.transcriber import (
     DeepgramTranscriberConfig,
     PunctuationEndpointingConfig,
 )
 from vocode.streaming.streaming_conversation import StreamingConversation
-from vocode.streaming.synthesizer.azure_synthesizer import AzureSynthesizer
-from vocode.streaming.synthesizer.cartesia_synthesizer import CartesiaSynthesizer
-from vocode.streaming.synthesizer.eleven_labs_websocket_synthesizer import ElevenLabsWSSynthesizer
 from vocode.streaming.synthesizer.waves_synthesizer import WaveSynthesizer
 from vocode.streaming.transcriber.deepgram_transcriber import DeepgramTranscriber
 

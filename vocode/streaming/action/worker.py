@@ -9,7 +9,7 @@ from vocode.streaming.models.actions import ActionInput
 from vocode.streaming.utils.state_manager import (
     AbstractConversationStateManager,
     TwilioPhoneConversationStateManager,
-    VonagePhoneConversationStateManager,
+    VonagePhoneConversationStateManager, ExotelPhoneConversationStateManager,
 )
 from vocode.streaming.utils.worker import (
     AbstractWorker,
@@ -59,6 +59,13 @@ class ActionsWorker(InterruptibleWorker):
                         self.conversation_state_manager.get_twilio_sid()
                         if isinstance(
                             self.conversation_state_manager, TwilioPhoneConversationStateManager
+                        )
+                        else None
+                    ),
+                    to_phone=(
+                        self.conversation_state_manager.get_to_phone()
+                        if isinstance(
+                            self.conversation_state_manager, ExotelPhoneConversationStateManager
                         )
                         else None
                     ),
